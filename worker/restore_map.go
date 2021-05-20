@@ -614,6 +614,7 @@ func RunMapper(req *pb.RestoreRequest, mapDir string) (*mapResult, error) {
 	dropAll := false
 	dropAttr := make(map[string]struct{})
 	dropNs := make(map[uint64]struct{})
+	var maxBannedNs uint64
 
 	// manifests are ordered as: latest..full
 	for i, manifest := range manifests {
@@ -705,6 +706,7 @@ func RunMapper(req *pb.RestoreRequest, mapDir string) (*mapResult, error) {
 				if err := pstore.BanNamespace(ns); err != nil {
 					return nil, errors.Wrapf(err, "Map phase failed to ban namespace: %d", ns)
 				}
+				maxBannedNs = x.Max(maxBannedNs, ns)
 			}
 		}
 	} // done with all the manifests.
@@ -721,5 +723,7 @@ func RunMapper(req *pb.RestoreRequest, mapDir string) (*mapResult, error) {
 		maxUid: mapper.maxUid,
 		maxNs:  mapper.maxNs,
 	}
+	// update the maxNsId considering banned namespaces.
+	mapRes.maxNs = x.Max(mapRes.maxNs, maxBannedNs)
 	return mapRes, nil
 }

@@ -23,9 +23,7 @@ import (
 	"log"
 	"math"
 	"net/http"
-
-	//nolint:gosec // profiling on bulk-loader tool considered noncritical
-	_ "net/http/pprof" // http profiler
+	_ "net/http/pprof" //nolint:gosec
 	"os"
 	"path/filepath"
 	"runtime"
@@ -36,11 +34,11 @@ import (
 	"github.com/dgraph-io/dgraph/ee"
 	"github.com/dgraph-io/dgraph/filestore"
 	"github.com/dgraph-io/dgraph/protos/pb"
+	"github.com/dgraph-io/dgraph/tok"
 	"github.com/dgraph-io/dgraph/worker"
+	"github.com/dgraph-io/dgraph/x"
 	"github.com/dgraph-io/ristretto/z"
 
-	"github.com/dgraph-io/dgraph/tok"
-	"github.com/dgraph-io/dgraph/x"
 	"github.com/spf13/cobra"
 )
 
@@ -120,7 +118,9 @@ func init() {
 	flag.Bool("new_uids", false,
 		"Ignore UIDs in load files and assign new ones.")
 	flag.Uint64("force-namespace", math.MaxUint64,
-		"Namespace onto which to load the data. If not set, will preserve the namespace.")
+		"Namespace onto which to load the data. If not set, will preserve the namespace."+
+			" When using this flag to load data into specific namespace, make sure that the "+
+			"load data do not have ACL data.")
 
 	flag.String("badger", BulkBadgerDefaults, z.NewSuperFlagHelp(BulkBadgerDefaults).
 		Head("Badger options (Refer to badger documentation for all possible options)").

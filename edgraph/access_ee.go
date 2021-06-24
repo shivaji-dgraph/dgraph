@@ -195,7 +195,7 @@ func validateToken(jwtStr string) (*userData, error) {
 		return nil, errors.Errorf("userid in claims is not a string:%v", userId)
 	}
 
-	/*  
+	/*
 	 * Since, JSON numbers follow JavaScript's double-precision floating-point
 	 * format . . .
 	 * -- references: https://restfulapi.net/json-data-types/
@@ -436,10 +436,7 @@ func InitializeAcl(closer *z.Closer) {
 		// The acl feature is not turned on.
 		return
 	}
-
-	for ns := range schema.State().Namespaces() {
-		upsertGuardianAndGroot(closer, ns)
-	}
+	upsertGuardianAndGroot(closer, x.GalaxyNamespace)
 }
 
 // Note: The handling of closer should be done by caller.

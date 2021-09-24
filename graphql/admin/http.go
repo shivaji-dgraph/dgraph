@@ -20,6 +20,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"github.com/dgraph-io/dgraph/ee/audit"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -181,6 +182,8 @@ func (gs *graphqlSubscription) Subscribe(
 		Variables:     variableValues,
 		Header:        reqHeader,
 	}
+
+	audit.AuditWebSockets(ctx, req)
 	namespace := x.ExtractNamespaceHTTP(&http.Request{Header: reqHeader})
 	LazyLoadSchema(namespace) // first load the schema, then do anything else
 	if err = gs.isValid(namespace); err != nil {
